@@ -5,6 +5,7 @@ package main
 import (
 	"os"
 
+	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/widgets"
 )
@@ -13,18 +14,13 @@ func main() {
 
 	widgets.NewQApplication(len(os.Args), os.Args)
 
-	var tab = widgets.NewQTabBar(nil)
+	var myTabWidget *widgets.QTabWidget
+	myTabWidget = widgets.NewQTabWidget(nil)
 
-	var tabSwitcherGroup = widgets.NewQGroupBox2("", nil)
-
-	var tabSwitcherLayout = widgets.NewQGridLayout2()
-	tabSwitcherLayout.AddWidget2(tab, 0, 0, 0)
-	tabSwitcherGroup.SetLayout(tabSwitcherLayout)
-
-	// Make Tab pages?
 	var myFirstTabPage *widgets.QWidget
 	myFirstTabPage = widgets.NewQWidget(nil, 0)
-	//var layoutFirstTabPage = widgets.NewQVBoxLayout()
+	var mySecondTabPage *widgets.QWidget
+	mySecondTabPage = widgets.NewQWidget(nil, 0)
 
 	// Echo Group Stuff
 	var (
@@ -45,6 +41,7 @@ func main() {
 	echoLayout.AddWidget3(echoLineEditCharName, 1, 0, 1, 1, 0)
 	echoLayout.AddWidget3(echoLineEditSpellName, 1, 1, 1, 2, 4)
 	echoGroup.SetLayout(echoLayout)
+	//myFirstTabPage.SetLayout(echoLayout)
 
 	//echoComboBox.ConnectCurrentIndexChanged(func(index int) { echoChanged(echoLineEditCharName, index) })
 
@@ -222,31 +219,26 @@ func main() {
 	// Put them together
 
 	var layout = widgets.NewQGridLayout2()
-	layout.AddWidget2(tabSwitcherGroup, 0, 0, 0)
 	layout.AddWidget2(echoGroup, 1, 0, 0)
 	layout.AddWidget2(AttkGroup, 2, 0, 0)
 	layout.AddWidget2(Damage1Group, 3, 0, 0)
 	layout.AddWidget2(buttonGroup, 4, 3, 0)
+	layout.AddWidget2(Damage2Group, 4, 0, 0)
+	layout.AddWidget2(SavingThrowGroup, 5, 0, 0)
 
 	myFirstTabPage.SetLayout(layout)
 
-	var layout2 = widgets.NewQGridLayout2()
-	layout2.AddWidget2(Damage2Group, 3, 0, 0)
-	layout2.AddWidget2(SavingThrowGroup, 4, 0, 0)
-
-	//mySecondTabPage.SetLayout(layout2)
-
-	tab.AddTab("Meow")
-	tab.AddTab("Woof")
+	var mainWindowLayout = widgets.NewQVBoxLayout()
+	mainWindowLayout.AddWidget(myTabWidget, 0, core.Qt__AlignCenter)
 
 	var window = widgets.NewQMainWindow(nil, 0)
 	window.SetWindowTitle("Line Edits")
 
-	var centralWidget = widgets.NewQWidget(window, 0)
-	centralWidget.SetLayout(layout)
+	myTabWidget.AddTab(myFirstTabPage, "first")
+	myTabWidget.AddTab(mySecondTabPage, "second")
 
-	var centralWidget2 = widgets.NewQWidget(window, 0)
-	centralWidget2.SetLayout(layout2)
+	var centralWidget = widgets.NewQWidget(window, 0)
+	centralWidget.SetLayout(mainWindowLayout)
 
 	window.SetCentralWidget(centralWidget)
 

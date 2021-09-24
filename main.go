@@ -3,7 +3,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/therecipe/qt/core"
@@ -11,12 +10,11 @@ import (
 	"github.com/therecipe/qt/widgets"
 )
 
-type Attack_blocker interface {
-	Error()
+type Char_Info interface {
 	setup()
 }
 
-type attack_block struct {
+type char_info_block struct {
 	echoGroup             *widgets.QGroupBox
 	echoLabel             *widgets.QLabel
 	echoLineEditCharName  *widgets.QLineEdit
@@ -24,16 +22,12 @@ type attack_block struct {
 	echoLayout            *widgets.QGridLayout
 }
 
-func (x attack_block) Error() {
-	fmt.Println("Invalid query entered")
-}
-
-func create_attack_block() *attack_block {
-	v := attack_block{widgets.NewQGroupBox2("", nil), widgets.NewQLabel2("Basics:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLineEdit(nil), widgets.NewQGridLayout2()}
+func create_char_info() *char_info_block {
+	v := char_info_block{widgets.NewQGroupBox2("", nil), widgets.NewQLabel2("Basics:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLineEdit(nil), widgets.NewQGridLayout2()}
 	return &v
 }
 
-func (x attack_block) setup() {
+func (x char_info_block) setup() {
 	x.echoLineEditCharName.SetPlaceholderText("Character Name")
 	x.echoLineEditSpellName.SetPlaceholderText("Spell Name")
 	x.echoLayout.AddWidget2(x.echoLabel, 0, 0, 0)
@@ -42,11 +36,29 @@ func (x attack_block) setup() {
 	x.echoGroup.SetLayout(x.echoLayout)
 }
 
+type Attack_blocker interface {
+	setup()
+}
+
+type attack_block struct {
+}
+
+func create_attack_block() *attack_block {
+	v := attack_block{}
+	return &v
+}
+
+func (x attack_block) setup() {
+}
+
 func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
 
 	w := create_attack_block()
 	w.setup()
+
+	x := create_char_info()
+	x.setup()
 
 	var myTabWidget *widgets.QTabWidget
 	myTabWidget = widgets.NewQTabWidget(nil)
@@ -258,7 +270,8 @@ func main() {
 	layout.AddWidget2(buttonGroup, 4, 3, 0)
 	layout.AddWidget2(Damage2Group, 4, 0, 0)
 	layout.AddWidget2(SavingThrowGroup, 5, 0, 0)
-	layout.AddWidget2(w.echoGroup, 6, 0, 0)
+	//layout.AddWidget2(w.echoGroup, 6, 0, 0)
+	layout.AddWidget2(x.echoGroup, 6, 0, 0)
 
 	myFirstTabPage.SetLayout(layout)
 

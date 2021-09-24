@@ -11,6 +11,11 @@ import (
 	"github.com/therecipe/qt/widgets"
 )
 
+type Attack_blocker interface {
+	Error()
+	setup()
+}
+
 type attack_block struct {
 	echoGroup             *widgets.QGroupBox
 	echoLabel             *widgets.QLabel

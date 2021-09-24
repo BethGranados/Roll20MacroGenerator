@@ -10,6 +10,7 @@ import (
 	"github.com/therecipe/qt/widgets"
 )
 
+// Char info Block
 type Char_Info interface {
 	setup()
 }
@@ -36,20 +37,79 @@ func (x char_info_block) setup() {
 	x.echoGroup.SetLayout(x.echoLayout)
 }
 
+//Attack block info
 type Attack_blocker interface {
 	setup()
 }
 
 type attack_block struct {
+	AttkGroup              *widgets.QGroupBox
+	AttkComboBoxTF         *widgets.QComboBox
+	AttkLabel              *widgets.QLabel
+	AttkPlus               *widgets.QLabel
+	AttkComboBoxType       *widgets.QComboBox
+	AttkLineEditModifier   *widgets.QLineEdit
+	AttkComboBoxProficient *widgets.QComboBox
+	AttkProfLabel          *widgets.QLabel
+	AttkRangeLabel         *widgets.QLabel
+	AttkLineEditRange      *widgets.QLineEdit
+	AttkMagicBonusLabel    *widgets.QLabel
+	AttkLineEditMagicBonus *widgets.QLineEdit
+	AttkCritRangeLabel     *widgets.QLabel
+	AttkLineEditCritRange  *widgets.QLineEdit
+	attkLayout             *widgets.QGridLayout
 }
 
 func create_attack_block() *attack_block {
-	v := attack_block{}
+	v := attack_block{widgets.NewQGroupBox2("", nil), widgets.NewQComboBox(nil), widgets.NewQLabel2("Attack:", nil, 0), widgets.NewQLabel2("+", nil, 0), widgets.NewQComboBox(nil), widgets.NewQLineEdit(nil), widgets.NewQComboBox(nil), widgets.NewQLabel2(" + Proficient", nil, 0), widgets.NewQLabel2("Range:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLabel2("Magic Bonus:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLabel2("Crit Range:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQGridLayout2()}
 	return &v
 }
 
 func (x attack_block) setup() {
+	x.AttkComboBoxTF.AddItems([]string{"True", "False"})
+	x.AttkComboBoxType.AddItems([]string{"STR", "DEX", "CON", "INT", "WIS", "CHA", "SPELL", "-"})
+
+	x.AttkLineEditModifier.SetPlaceholderText("0")
+	x.AttkLineEditModifier.SetValidator(gui.NewQIntValidator(x.AttkLineEditModifier))
+	x.AttkLineEditMagicBonus.SetPlaceholderText("0")
+	x.AttkComboBoxProficient.AddItems([]string{"False", "True"})
+	x.AttkLineEditRange.SetPlaceholderText("Self (60ft Cone)")
+	x.AttkLineEditCritRange.SetTextDefault("20")
+
+	x.attkLayout.AddWidget2(x.AttkLabel, 0, 1, 0)
+	x.attkLayout.AddWidget2(x.AttkComboBoxTF, 0, 0, 0)
+	x.attkLayout.AddWidget2(x.AttkComboBoxType, 0, 2, 0)
+	x.attkLayout.AddWidget2(x.AttkPlus, 0, 3, 0)
+	x.attkLayout.AddWidget2(x.AttkLineEditModifier, 0, 4, 0)
+	x.attkLayout.AddWidget2(x.AttkComboBoxProficient, 0, 5, 0)
+	x.attkLayout.AddWidget2(x.AttkProfLabel, 0, 6, 0)
+
+	x.attkLayout.AddWidget2(x.AttkRangeLabel, 1, 0, 0)
+	x.attkLayout.AddWidget2(x.AttkLineEditRange, 1, 1, 0)
+
+	x.attkLayout.AddWidget2(x.AttkMagicBonusLabel, 2, 0, 0)
+	x.attkLayout.AddWidget2(x.AttkLineEditMagicBonus, 2, 1, 0)
+	x.attkLayout.AddWidget2(x.AttkCritRangeLabel, 2, 2, 0)
+	x.attkLayout.AddWidget2(x.AttkLineEditCritRange, 2, 3, 0)
+
+	x.AttkGroup.SetLayout(x.attkLayout)
 }
+
+//Damage block
+
+type Damage_blocker interface {
+	setup()
+}
+
+type damage_block struct {
+}
+
+func create_damage_block() *damage_block {
+	v := damage_block{}
+	return &v
+}
+
+//
 
 func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
@@ -68,77 +128,7 @@ func main() {
 	var mySecondTabPage *widgets.QWidget
 	mySecondTabPage = widgets.NewQWidget(nil, 0)
 
-	// Echo Group Stuff
-	var (
-		echoGroup             = widgets.NewQGroupBox2("", nil)
-		echoLabel             = widgets.NewQLabel2("Basics:", nil, 0)
-		echoLineEditCharName  = widgets.NewQLineEdit(nil)
-		echoLineEditSpellName = widgets.NewQLineEdit(nil)
-	)
-
-	//echoComboBox.AddItems([]string{"STR", "DEX", "CHA", "CON", "INT", "WIS", "SPELL"})
-	echoLineEditCharName.SetPlaceholderText("Character Name")
-	echoLineEditSpellName.SetPlaceholderText("Spell Name")
-
-	var echoLayout = widgets.NewQGridLayout2()
-	echoLayout.AddWidget2(echoLabel, 0, 0, 0)
-	//echoLayout.AddWidget2(echoComboBox, 0, 1, 0)
-	echoLayout.AddWidget3(echoLineEditCharName, 1, 0, 1, 1, 0)
-	echoLayout.AddWidget3(echoLineEditSpellName, 1, 1, 1, 2, 4)
-	echoGroup.SetLayout(echoLayout)
-	//myFirstTabPage.SetLayout(echoLayout)
-
 	//echoComboBox.ConnectCurrentIndexChanged(func(index int) { echoChanged(echoLineEditCharName, index) })
-
-	// Attack Group Stuff
-	var (
-		AttkGroup              = widgets.NewQGroupBox2("", nil)
-		AttkComboBoxTF         = widgets.NewQComboBox(nil)
-		AttkLabel              = widgets.NewQLabel2("Attack:", nil, 0)
-		AttkPlus               = widgets.NewQLabel2("+", nil, 0)
-		AttkComboBoxType       = widgets.NewQComboBox(nil)
-		AttkLineEditModifier   = widgets.NewQLineEdit(nil)
-		AttkComboBoxProficient = widgets.NewQComboBox(nil)
-		AttkProfLabel          = widgets.NewQLabel2(" + Proficient", nil, 0)
-
-		AttkRangeLabel    = widgets.NewQLabel2("Range:", nil, 0)
-		AttkLineEditRange = widgets.NewQLineEdit(nil)
-
-		AttkMagicBonusLabel    = widgets.NewQLabel2("Magic Bonus:", nil, 0)
-		AttkLineEditMagicBonus = widgets.NewQLineEdit(nil)
-		AttkCritRangeLabel     = widgets.NewQLabel2("Crit Range:", nil, 0)
-		AttkLineEditCritRange  = widgets.NewQLineEdit(nil)
-	)
-
-	AttkComboBoxTF.AddItems([]string{"True", "False"})
-	AttkComboBoxType.AddItems([]string{"STR", "DEX", "CON", "INT", "WIS", "CHA", "SPELL", "-"})
-
-	AttkLineEditModifier.SetPlaceholderText("0")
-	AttkLineEditModifier.SetValidator(gui.NewQIntValidator(AttkLineEditModifier))
-	AttkLineEditMagicBonus.SetPlaceholderText("0")
-	AttkComboBoxProficient.AddItems([]string{"False", "True"})
-	AttkLineEditRange.SetPlaceholderText("Self (60ft Cone)")
-	//AttkLineEditCritRange.SetPlaceholderText("20")
-	AttkLineEditCritRange.SetTextDefault("20")
-
-	var attkLayout = widgets.NewQGridLayout2()
-	attkLayout.AddWidget2(AttkLabel, 0, 1, 0)
-	attkLayout.AddWidget2(AttkComboBoxTF, 0, 0, 0)
-	attkLayout.AddWidget2(AttkComboBoxType, 0, 2, 0)
-	attkLayout.AddWidget2(AttkPlus, 0, 3, 0)
-	attkLayout.AddWidget2(AttkLineEditModifier, 0, 4, 0)
-	attkLayout.AddWidget2(AttkComboBoxProficient, 0, 5, 0)
-	attkLayout.AddWidget2(AttkProfLabel, 0, 6, 0)
-
-	attkLayout.AddWidget2(AttkRangeLabel, 1, 0, 0)
-	attkLayout.AddWidget2(AttkLineEditRange, 1, 1, 0)
-
-	attkLayout.AddWidget2(AttkMagicBonusLabel, 2, 0, 0)
-	attkLayout.AddWidget2(AttkLineEditMagicBonus, 2, 1, 0)
-	attkLayout.AddWidget2(AttkCritRangeLabel, 2, 2, 0)
-	attkLayout.AddWidget2(AttkLineEditCritRange, 2, 3, 0)
-
-	AttkGroup.SetLayout(attkLayout)
 
 	//Damage 1 Stuff
 	var (
@@ -264,14 +254,12 @@ func main() {
 	// Put them together
 
 	var layout = widgets.NewQGridLayout2()
-	layout.AddWidget2(echoGroup, 1, 0, 0)
-	layout.AddWidget2(AttkGroup, 2, 0, 0)
+	layout.AddWidget2(x.echoGroup, 1, 0, 0)
+	layout.AddWidget2(w.AttkGroup, 2, 0, 0)
 	layout.AddWidget2(Damage1Group, 3, 0, 0)
 	layout.AddWidget2(buttonGroup, 4, 3, 0)
 	layout.AddWidget2(Damage2Group, 4, 0, 0)
 	layout.AddWidget2(SavingThrowGroup, 5, 0, 0)
-	//layout.AddWidget2(w.echoGroup, 6, 0, 0)
-	layout.AddWidget2(x.echoGroup, 6, 0, 0)
 
 	myFirstTabPage.SetLayout(layout)
 

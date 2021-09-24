@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/therecipe/qt/core"
@@ -10,9 +11,37 @@ import (
 	"github.com/therecipe/qt/widgets"
 )
 
-func main() {
+type attack_block struct {
+	echoGroup             *widgets.QGroupBox
+	echoLabel             *widgets.QLabel
+	echoLineEditCharName  *widgets.QLineEdit
+	echoLineEditSpellName *widgets.QLineEdit
+	echoLayout            *widgets.QGridLayout
+}
 
+func (x attack_block) Error() {
+	fmt.Println("Invalid query entered")
+}
+
+func create_attack_block() *attack_block {
+	v := attack_block{widgets.NewQGroupBox2("", nil), widgets.NewQLabel2("Basics:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLineEdit(nil), widgets.NewQGridLayout2()}
+	return &v
+}
+
+func (x attack_block) setup() {
+	x.echoLineEditCharName.SetPlaceholderText("Character Name")
+	x.echoLineEditSpellName.SetPlaceholderText("Spell Name")
+	x.echoLayout.AddWidget2(x.echoLabel, 0, 0, 0)
+	x.echoLayout.AddWidget3(x.echoLineEditCharName, 1, 0, 1, 1, 0)
+	x.echoLayout.AddWidget3(x.echoLineEditSpellName, 1, 1, 1, 2, 4)
+	x.echoGroup.SetLayout(x.echoLayout)
+}
+
+func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
+
+	w := create_attack_block()
+	w.setup()
 
 	var myTabWidget *widgets.QTabWidget
 	myTabWidget = widgets.NewQTabWidget(nil)
@@ -24,9 +53,8 @@ func main() {
 
 	// Echo Group Stuff
 	var (
-		echoGroup = widgets.NewQGroupBox2("", nil)
-		echoLabel = widgets.NewQLabel2("Basics:", nil, 0)
-		// echoComboBox          = widgets.NewQComboBox(nil)
+		echoGroup             = widgets.NewQGroupBox2("", nil)
+		echoLabel             = widgets.NewQLabel2("Basics:", nil, 0)
 		echoLineEditCharName  = widgets.NewQLineEdit(nil)
 		echoLineEditSpellName = widgets.NewQLineEdit(nil)
 	)
@@ -225,6 +253,7 @@ func main() {
 	layout.AddWidget2(buttonGroup, 4, 3, 0)
 	layout.AddWidget2(Damage2Group, 4, 0, 0)
 	layout.AddWidget2(SavingThrowGroup, 5, 0, 0)
+	layout.AddWidget2(w.echoGroup, 6, 0, 0)
 
 	myFirstTabPage.SetLayout(layout)
 

@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/therecipe/qt/gui"
@@ -12,6 +13,7 @@ import (
 // Char info Block
 type Char_Info interface {
 	setup()
+	getName()
 }
 
 type char_info_block struct {
@@ -34,6 +36,10 @@ func (x char_info_block) setup() {
 	x.echoLayout.AddWidget3(x.echoLineEditCharName, 1, 0, 1, 1, 0)
 	x.echoLayout.AddWidget3(x.echoLineEditSpellName, 1, 1, 1, 2, 4)
 	x.echoGroup.SetLayout(x.echoLayout)
+}
+
+func (x char_info_block) getName() string {
+	return x.echoLineEditCharName.Text()
 }
 
 //Attack block info
@@ -260,12 +266,15 @@ func main() {
 	ButtonLayout.AddWidget2(button, 0, 0, 0)
 	buttonGroup.SetLayout(ButtonLayout)
 
+	button.ConnectClicked(func(thing bool) { meow(thing) })
+
 	myFirstTabPage.SetLayout(v.Layout)
 	mySecondTabPage.SetLayout(t.Layout)
 
 	var mainWindowLayout = widgets.NewQGridLayout2()
-
-	mainWindowLayout.AddWidget2(myTabWidget, 0, 0, 0)
+	mainWindowLayout.AddWidget2(x.echoGroup, 0, 0, 0)
+	mainWindowLayout.AddWidget2(myTabWidget, 1, 0, 0)
+	mainWindowLayout.AddWidget2(buttonGroup, 1, 1, 0)
 
 	var window = widgets.NewQMainWindow(nil, 0)
 	window.SetWindowTitle("Line Edits")
@@ -283,6 +292,12 @@ func main() {
 	window.Show()
 
 	widgets.QApplication_Exec()
+}
+
+func meow(thing bool) {
+	if thing == false {
+		fmt.Println("Meow... ")
+	}
 }
 
 func echoChanged(window *widgets.QMainWindow, centralWidget1 *widgets.QWidget, centralWidget2 *widgets.QWidget, index int) {

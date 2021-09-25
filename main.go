@@ -221,6 +221,9 @@ func (x d20_macro_block) setup() {
 	x.Layout.AddWidget2(x.d20_damage_block2.Damage1Group, 3, 0, 0)
 	x.Layout.AddWidget2(x.d20_saving_block.SavingThrowGroup, 4, 0, 0)
 }
+func (x d20_macro_block) getName() string {
+	return "Meow"
+}
 
 func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
@@ -230,9 +233,6 @@ func main() {
 
 	v := create_d20_macro()
 	v.setup()
-
-	w := create_attack_block()
-	w.setup()
 
 	x := create_char_info()
 	x.setup()
@@ -246,27 +246,19 @@ func main() {
 	mySecondTabPage = widgets.NewQWidget(nil, 0)
 
 	//echoComboBox.ConnectCurrentIndexChanged(func(index int) { echoChanged(echoLineEditCharName, index) })
-	d1 := create_damage_block()
-	d1.setup()
-
-	d2 := create_damage_block()
-	d2.setup()
-
-	st := create_saving_throw_block()
-	st.setup()
 
 	// Button
 
 	var (
 		buttonGroup = widgets.NewQGroupBox2("", nil)
-		button      = widgets.NewQPushButton2("Click me", nil)
+		button      = widgets.NewQPushButton2("Generate", nil)
 	)
 
 	var ButtonLayout = widgets.NewQGridLayout2()
 	ButtonLayout.AddWidget2(button, 0, 0, 0)
 	buttonGroup.SetLayout(ButtonLayout)
 
-	button.ConnectClicked(func(thing bool) { meow(thing) })
+	button.ConnectClicked(func(thing bool) { generate_macro(thing, x, t, v) })
 
 	myFirstTabPage.SetLayout(v.Layout)
 	mySecondTabPage.SetLayout(t.Layout)
@@ -294,9 +286,25 @@ func main() {
 	widgets.QApplication_Exec()
 }
 
-func meow(thing bool) {
+func generate_macro(thing bool, character *char_info_block, block1 *d20_macro_block, block2 *d20_macro_block) {
 	if thing == false {
-		fmt.Println("Meow... ")
+
+		var macro string = ""
+
+		macro += "!&{template:atkdmg} "
+		macro += "{{mod=@{" + character.getName() + "|spell_attack_bonus}}}"
+
+		macro += "{{rname=test}} "
+		macro += "{{r1=[[1d20+@{" + character.getName() + "|spell_attack_bonus}]]}} "
+		macro += "{{normal=1}} {{attack=1}} "
+		macro += "{{range=20ft}} "
+		macro += "{{damage=1}} {{dmg1flag=1}} "
+		macro += "{{dmg1=[[1d6]]}}"
+		macro += "{{dmg1type=1d6}} {{spelllevel=0}} "
+		macro += "}"
+
+		fmt.Println(macro)
+
 	}
 }
 

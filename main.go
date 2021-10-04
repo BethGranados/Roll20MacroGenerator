@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"container/list"
+
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/widgets"
 )
@@ -433,14 +435,23 @@ func (x d20_macro_block) generate_macro() string {
 func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
 
+	tabthing := list.New()
+
 	x := create_char_info()
 	x.setup()
 
-	t := create_d20_macro(x)
+	/*t := create_d20_macro(x)
 	t.setup()
 
 	v := create_d20_macro(x)
-	v.setup()
+	v.setup()*/
+
+	tabthing.pushback(create_d20_macro(x))
+	tabthing.pushback(create_d20_macro(x))
+
+	for e := tabthing.Front(); e != nil; e = e.Next() {
+		d20_macro_block(e.Value.(d20_macro_block)).setup()
+	}
 
 	var myTabWidget *widgets.QTabWidget
 	myTabWidget = widgets.NewQTabWidget(nil)
@@ -465,8 +476,8 @@ func main() {
 
 	button.ConnectClicked(func(thing bool) { generate_macro_full(thing, x, t, v) })
 
-	myFirstTabPage.SetLayout(t.Layout)
-	mySecondTabPage.SetLayout(v.Layout)
+	myFirstTabPage.SetLayout(tabthing.Front().Layout)
+	mySecondTabPage.SetLayout(tabthing.Back().Layout)
 
 	var mainWindowLayout = widgets.NewQGridLayout2()
 	mainWindowLayout.AddWidget2(x.echoGroup, 0, 0, 0)

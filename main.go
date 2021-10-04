@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"container/list"
-
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/widgets"
 )
@@ -435,23 +433,20 @@ func (x d20_macro_block) generate_macro() string {
 func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
 
-	tabthing := list.New()
+	blockList := []*d20_macro_block{}
 
 	x := create_char_info()
 	x.setup()
 
-	/*t := create_d20_macro(x)
+	t := create_d20_macro(x)
 	t.setup()
 
+	blockList = append(blockList, t)
+
 	v := create_d20_macro(x)
-	v.setup()*/
+	v.setup()
 
-	tabthing.pushback(create_d20_macro(x))
-	tabthing.pushback(create_d20_macro(x))
-
-	for e := tabthing.Front(); e != nil; e = e.Next() {
-		d20_macro_block(e.Value.(d20_macro_block)).setup()
-	}
+	blockList = append(blockList, v)
 
 	var myTabWidget *widgets.QTabWidget
 	myTabWidget = widgets.NewQTabWidget(nil)
@@ -466,18 +461,20 @@ func main() {
 	// Button
 
 	var (
-		buttonGroup = widgets.NewQGroupBox2("", nil)
-		button      = widgets.NewQPushButton2("Generate", nil)
+		buttonGroup    = widgets.NewQGroupBox2("", nil)
+		generateButton = widgets.NewQPushButton2("Generate", nil)
 	)
 
 	var ButtonLayout = widgets.NewQGridLayout2()
-	ButtonLayout.AddWidget2(button, 0, 0, 0)
+	ButtonLayout.AddWidget2(generateButton, 0, 0, 0)
 	buttonGroup.SetLayout(ButtonLayout)
 
-	button.ConnectClicked(func(thing bool) { generate_macro_full(thing, x, t, v) })
+	//generateButton.ConnectClicked(func(thing bool) { generate_macro_full(thing, x, blockList[0], blockList[1]) })
 
-	myFirstTabPage.SetLayout(tabthing.Front().Layout)
-	mySecondTabPage.SetLayout(tabthing.Back().Layout)
+	generateButton.ConnectClicked(func(thing bool) { generate_macro_full(thing, x, blockList) })
+
+	myFirstTabPage.SetLayout(blockList[0].Layout)
+	mySecondTabPage.SetLayout(blockList[1].Layout)
 
 	var mainWindowLayout = widgets.NewQGridLayout2()
 	mainWindowLayout.AddWidget2(x.echoGroup, 0, 0, 0)
@@ -502,15 +499,21 @@ func main() {
 	widgets.QApplication_Exec()
 }
 
-func generate_macro_full(thing bool, character *char_info_block, block1 *d20_macro_block, block2 *d20_macro_block) {
+func generate_macro_full(thing bool, character *char_info_block, blockList []*d20_macro_block) {
 	if thing == false {
-		fmt.Printf("?{Which Option?|Option1,\n")
+		/*fmt.Printf("?{Which Option?")
 		fmt.Printf(block1.generate_macro())
 		fmt.Printf("|Option2,\n")
 		fmt.Printf(block2.generate_macro())
-		fmt.Printf("}")
+		fmt.Printf("}")*/
 
+		for _, j := range blockList {
+			fmt.Printf("|Option1,\n")
+			fmt.Printf(j.generate_macro())
+		}
+		fmt.Printf("}")
 	}
+
 }
 
 func echoChanged(window *widgets.QMainWindow, centralWidget1 *widgets.QWidget, centralWidget2 *widgets.QWidget, index int) {

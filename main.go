@@ -17,24 +17,22 @@ type Char_Info interface {
 }
 
 type char_info_block struct {
-	echoGroup             *widgets.QGroupBox
-	echoLabel             *widgets.QLabel
-	echoLineEditCharName  *widgets.QLineEdit
-	echoLineEditSpellName *widgets.QLineEdit
-	echoLayout            *widgets.QGridLayout
+	echoGroup            *widgets.QGroupBox
+	echoLabel            *widgets.QLabel
+	echoLineEditCharName *widgets.QLineEdit
+	echoLayout           *widgets.QGridLayout
 }
 
 func create_char_info() *char_info_block {
-	v := char_info_block{widgets.NewQGroupBox2("", nil), widgets.NewQLabel2("Basics:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLineEdit(nil), widgets.NewQGridLayout2()}
+	v := char_info_block{widgets.NewQGroupBox2("", nil), widgets.NewQLabel2("Basics:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQGridLayout2()}
 	return &v
 }
 
 func (x char_info_block) setup() {
 	x.echoLineEditCharName.SetPlaceholderText("Character Name")
-	x.echoLineEditSpellName.SetPlaceholderText("Spell Name")
+
 	x.echoLayout.AddWidget2(x.echoLabel, 0, 0, 0)
 	x.echoLayout.AddWidget3(x.echoLineEditCharName, 1, 0, 1, 1, 0)
-	x.echoLayout.AddWidget3(x.echoLineEditSpellName, 1, 1, 1, 2, 4)
 	x.echoGroup.SetLayout(x.echoLayout)
 }
 
@@ -49,6 +47,7 @@ type Attack_blocker interface {
 
 type attack_block struct {
 	AttkGroup              *widgets.QGroupBox
+	echoLineEditSpellName  *widgets.QLineEdit
 	AttkComboBoxTF         *widgets.QComboBox
 	AttkLabel              *widgets.QLabel
 	AttkPlus               *widgets.QLabel
@@ -66,13 +65,15 @@ type attack_block struct {
 }
 
 func create_attack_block() *attack_block {
-	v := attack_block{widgets.NewQGroupBox2("", nil), widgets.NewQComboBox(nil), widgets.NewQLabel2("Attack:", nil, 0), widgets.NewQLabel2("+", nil, 0), widgets.NewQComboBox(nil), widgets.NewQLineEdit(nil), widgets.NewQComboBox(nil), widgets.NewQLabel2(" + Proficient", nil, 0), widgets.NewQLabel2("Range:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLabel2("Magic Bonus:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLabel2("Crit Range:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQGridLayout2()}
+	v := attack_block{widgets.NewQGroupBox2("", nil), widgets.NewQLineEdit(nil), widgets.NewQComboBox(nil), widgets.NewQLabel2("Attack:", nil, 0), widgets.NewQLabel2("+", nil, 0), widgets.NewQComboBox(nil), widgets.NewQLineEdit(nil), widgets.NewQComboBox(nil), widgets.NewQLabel2(" + Proficient", nil, 0), widgets.NewQLabel2("Range:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLabel2("Magic Bonus:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLabel2("Crit Range:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQGridLayout2()}
 	return &v
 }
 
 func (x attack_block) setup() {
+
 	x.AttkComboBoxTF.AddItems([]string{"True", "False"})
 	x.AttkComboBoxType.AddItems([]string{"STR", "DEX", "CON", "INT", "WIS", "CHA", "SPELL", "-"})
+	x.echoLineEditSpellName.SetPlaceholderText("Action Name")
 
 	x.AttkLineEditModifier.SetPlaceholderText("0")
 	x.AttkLineEditModifier.SetValidator(gui.NewQIntValidator(x.AttkLineEditModifier))
@@ -81,23 +82,81 @@ func (x attack_block) setup() {
 	x.AttkLineEditRange.SetPlaceholderText("Self (60ft Cone)")
 	x.AttkLineEditCritRange.SetTextDefault("20")
 
-	x.attkLayout.AddWidget2(x.AttkLabel, 0, 1, 0)
-	x.attkLayout.AddWidget2(x.AttkComboBoxTF, 0, 0, 0)
-	x.attkLayout.AddWidget2(x.AttkComboBoxType, 0, 2, 0)
-	x.attkLayout.AddWidget2(x.AttkPlus, 0, 3, 0)
-	x.attkLayout.AddWidget2(x.AttkLineEditModifier, 0, 4, 0)
-	x.attkLayout.AddWidget2(x.AttkComboBoxProficient, 0, 5, 0)
-	x.attkLayout.AddWidget2(x.AttkProfLabel, 0, 6, 0)
+	x.attkLayout.AddWidget2(x.AttkLabel, 0, 0, 0)
+	x.attkLayout.AddWidget2(x.echoLineEditSpellName, 0, 1, 0)
+	x.attkLayout.AddWidget2(x.AttkComboBoxTF, 1, 0, 0)
+	x.attkLayout.AddWidget2(x.AttkComboBoxType, 1, 2, 0)
+	x.attkLayout.AddWidget2(x.AttkPlus, 1, 3, 0)
+	x.attkLayout.AddWidget2(x.AttkLineEditModifier, 1, 4, 0)
+	x.attkLayout.AddWidget2(x.AttkComboBoxProficient, 1, 5, 0)
+	x.attkLayout.AddWidget2(x.AttkProfLabel, 1, 6, 0)
 
-	x.attkLayout.AddWidget2(x.AttkRangeLabel, 1, 0, 0)
-	x.attkLayout.AddWidget2(x.AttkLineEditRange, 1, 1, 0)
+	x.attkLayout.AddWidget2(x.AttkRangeLabel, 2, 0, 0)
+	x.attkLayout.AddWidget2(x.AttkLineEditRange, 2, 1, 0)
 
-	x.attkLayout.AddWidget2(x.AttkMagicBonusLabel, 2, 0, 0)
-	x.attkLayout.AddWidget2(x.AttkLineEditMagicBonus, 2, 1, 0)
-	x.attkLayout.AddWidget2(x.AttkCritRangeLabel, 2, 2, 0)
-	x.attkLayout.AddWidget2(x.AttkLineEditCritRange, 2, 3, 0)
+	x.attkLayout.AddWidget2(x.AttkMagicBonusLabel, 3, 0, 0)
+	x.attkLayout.AddWidget2(x.AttkLineEditMagicBonus, 3, 1, 0)
+	x.attkLayout.AddWidget2(x.AttkCritRangeLabel, 3, 2, 0)
+	x.attkLayout.AddWidget2(x.AttkLineEditCritRange, 3, 3, 0)
 
 	x.AttkGroup.SetLayout(x.attkLayout)
+}
+
+func (x attack_block) getMoveName() string {
+	return x.echoLineEditSpellName.Text()
+}
+
+func (x attack_block) getModType() (bool, string) {
+	switch x.AttkComboBoxType.CurrentText() {
+	case "STR":
+		return true, "strength_mod"
+	case "DEX":
+		return true, "dexterity_mod"
+	case "CON":
+		return true, "constitution_mod"
+	case "INT":
+		return true, "intelligence_mod"
+	case "WIS":
+		return true, "wisdom_mod"
+	case "CHA":
+		return true, "charisma_mod"
+	case "SPELL":
+		return true, "spell_attack_bonus"
+	case "-":
+		return false, ""
+	default:
+		return false, ""
+	}
+}
+
+func (x attack_block) isProficient() bool {
+	switch x.AttkComboBoxProficient.CurrentText() {
+	case "True":
+		return true
+	case "False":
+		return false
+	}
+	return false
+}
+
+func (x attack_block) getBonusMod() (bool, string) {
+	mod := x.AttkLineEditModifier.Text()
+	if mod != "" {
+		return true, mod
+	}
+	return false, ""
+}
+
+func (x attack_block) getRange() string {
+	return x.AttkLineEditRange.Text()
+}
+
+func (x attack_block) getMagicBonus() string {
+	return x.AttkMagicBonusLabel.Text()
+}
+
+func (x attack_block) getCritRange() string {
+	return x.AttkCritRangeLabel.Text()
 }
 
 //Damage block
@@ -130,7 +189,6 @@ func create_damage_block() *damage_block {
 
 func (x damage_block) setup() {
 	x.Damage1ComboBoxTF.AddItems([]string{"True", "False"})
-	x.Damage1ComboBoxType.AddItems([]string{"STR", "DEX", "CON", "INT", "WIS", "CHA", "SPELL", "-"})
 	x.Damage1LineEditDamage.SetPlaceholderText("1d6")
 	x.Damage1LineEditBonus.SetPlaceholderText("0")
 	x.Damage1LineEditType.SetPlaceholderText("Slashing")
@@ -150,6 +208,36 @@ func (x damage_block) setup() {
 	x.damage1Layout.AddWidget2(x.Damage1LineEditCrit, 1, 3, 0)
 
 	x.Damage1Group.SetLayout(x.damage1Layout)
+}
+
+func (x damage_block) isEnabled() bool {
+	switch x.Damage1ComboBoxTF.CurrentText() {
+	case "True":
+		return true
+	case "False":
+		return false
+	}
+	return false
+}
+
+func (x damage_block) getBonusMod() string {
+	return x.Damage1LineEditBonus.Text()
+}
+
+func (x damage_block) getDamageType() string {
+	return x.Damage1LineEditType.Text()
+}
+
+func (x damage_block) getCrit() string {
+	return x.Damage1LineEditCrit.Text()
+}
+
+func (x damage_block) getBonusType() string {
+	return x.Damage1LabelType.Text()
+}
+
+func (x damage_block) getDamage() string {
+	return x.Damage1LineEditDamage.Text()
 }
 
 // Saving Throw Box
@@ -193,11 +281,71 @@ func (x saving_throw_block) setup() {
 	x.SavingThrowGroup.SetLayout(x.SavingThrowLayout)
 }
 
+func (x saving_throw_block) isActive() bool {
+	switch x.SavingThrowComboBoxTF.CurrentText() {
+	case "True":
+		return true
+	case "False":
+		return false
+	}
+	return false
+}
+
+func (x saving_throw_block) getThrowStat() (bool, string) {
+	switch x.SavingThrowComboBoxStat.CurrentText() {
+	case "STR":
+		return true, "strength_mod"
+	case "DEX":
+		return true, "dexterity_mod"
+	case "CON":
+		return true, "constitution_mod"
+	case "INT":
+		return true, "intelligence_mod"
+	case "WIS":
+		return true, "wisdom_mod"
+	case "CHA":
+		return true, "charisma_mod"
+	default:
+		return false, ""
+	}
+}
+
+func (x saving_throw_block) getSavingThrowEffect() string {
+	return x.SavingThrowLineEdit.Text()
+}
+
+func (x saving_throw_block) getThrowType() (bool, string) {
+	switch x.SavingThrowComboBoxType.CurrentText() {
+	case "STR":
+		return true, "strength_mod"
+	case "DEX":
+		return true, "dexterity_mod"
+	case "CON":
+		return true, "constitution_mod"
+	case "INT":
+		return true, "intelligence_mod"
+	case "WIS":
+		return true, "wisdom_mod"
+	case "CHA":
+		return true, "charisma_mod"
+	case "SPELL":
+		return true, "spell_attack_bonus"
+	case "-":
+		return false, ""
+	default:
+		return false, ""
+	}
+}
+
+// Put it all together...
+
 type d20_macro interface {
 	setup()
+	generate_macro()
 }
 
 type d20_macro_block struct {
+	character         *char_info_block
 	d20_attack_block  *attack_block
 	d20_damage_block1 *damage_block
 	d20_damage_block2 *damage_block
@@ -205,8 +353,8 @@ type d20_macro_block struct {
 	Layout            *widgets.QGridLayout
 }
 
-func create_d20_macro() *d20_macro_block {
-	v := d20_macro_block{create_attack_block(), create_damage_block(), create_damage_block(), create_saving_throw_block(), widgets.NewQGridLayout2()}
+func create_d20_macro(info *char_info_block) *d20_macro_block {
+	v := d20_macro_block{info, create_attack_block(), create_damage_block(), create_damage_block(), create_saving_throw_block(), widgets.NewQGridLayout2()}
 	return &v
 }
 
@@ -225,17 +373,74 @@ func (x d20_macro_block) getName() string {
 	return "Meow"
 }
 
+func (x d20_macro_block) generate_macro() string {
+	moveName := x.d20_attack_block.getMoveName()
+	definedType, moveType := x.d20_attack_block.getModType()
+	definedMod, modifier := x.d20_attack_block.getBonusMod()
+	//proficient := x.d20_attack_block.isProficient()
+	atkRange := x.d20_attack_block.getRange()
+	//magicBonus := x.d20_attack_block.getMagicBonus()
+	//Crit := x.d20_attack_block.getCritRange()
+
+	//cb := "}"
+	cb := "&#125;"
+
+	macroText := ""
+
+	macroText += "&{template:atkdmg" + cb + "{{mod="
+
+	if definedType {
+		macroText += "@{" + x.character.getName() + "|" + moveType + "}"
+	}
+
+	if definedMod {
+		macroText += " + " + modifier
+	}
+
+	macroText += cb + cb + "{{rname=" + moveName + cb + cb + "{{r1=[[1d20"
+
+	if definedType {
+		macroText += "+@{" + x.character.getName() + "|" + moveType + "}"
+	}
+
+	if definedMod {
+		macroText += " + " + modifier
+	}
+
+	macroText += "]]" + cb + cb + "{{normal=1" + cb + cb + "{{attack=1" + cb + cb + "{{range=" + atkRange + cb + cb
+
+	if x.d20_damage_block1.isEnabled() {
+		macroText += "{{damage=1" + cb + cb + "{{dmg1flag=1" + cb + cb + "{{dmg1=[[" + x.d20_damage_block1.getDamage()
+		macroText += "]]" + cb + cb + "{{dmg1type=" + x.d20_damage_block1.getBonusType() + cb + cb
+	} else {
+		macroText += "{{damage=0" + cb + cb + "{{dmg1flag=" + cb + cb + "{{dmg1=0" + cb + cb + "{{dmg1type=" + cb + cb
+	}
+
+	if x.d20_damage_block2.isEnabled() {
+		macroText += "{{damage=2" + cb + cb + "{{dmg2flag=1" + cb + cb + "{{dmg2=[[" + x.d20_damage_block2.getDamage() + "]+" + cb + cb + "{{dmg2type=" + cb + cb
+	} else {
+		macroText += "{{damage=0" + cb + cb + "{{dmg2flag=" + cb + cb + "{{dmg2=0" + cb + cb + "{{dmg2type=" + cb + cb
+	}
+
+	macroText += "{{spelllevel=0" + cb + cb
+
+	return macroText
+
+	//return "!&{template:atkdmg}{{mod=@{" + x.character.getName() + "|" + moveType + "}" + modifier + "}}{{rname=" + moveName + "}} {{r1=[[1d20+@{" +
+	//x.character.getName() + "|" + moveType + "}  ]]}} {{normal=1}} {{attack=1}} {{range=" + atkRange + "}}{{damage=1}} {{dmg1flag=1}}{{dmg1=[[1d6]]}}{{dmg1type=1d6}} {{spelllevel=0}}}"
+}
+
 func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
 
-	t := create_d20_macro()
-	t.setup()
-
-	v := create_d20_macro()
-	v.setup()
-
 	x := create_char_info()
 	x.setup()
+
+	t := create_d20_macro(x)
+	t.setup()
+
+	v := create_d20_macro(x)
+	v.setup()
 
 	var myTabWidget *widgets.QTabWidget
 	myTabWidget = widgets.NewQTabWidget(nil)
@@ -258,10 +463,10 @@ func main() {
 	ButtonLayout.AddWidget2(button, 0, 0, 0)
 	buttonGroup.SetLayout(ButtonLayout)
 
-	button.ConnectClicked(func(thing bool) { generate_macro(thing, x, t, v) })
+	button.ConnectClicked(func(thing bool) { generate_macro_full(thing, x, t, v) })
 
-	myFirstTabPage.SetLayout(v.Layout)
-	mySecondTabPage.SetLayout(t.Layout)
+	myFirstTabPage.SetLayout(t.Layout)
+	mySecondTabPage.SetLayout(v.Layout)
 
 	var mainWindowLayout = widgets.NewQGridLayout2()
 	mainWindowLayout.AddWidget2(x.echoGroup, 0, 0, 0)
@@ -286,24 +491,13 @@ func main() {
 	widgets.QApplication_Exec()
 }
 
-func generate_macro(thing bool, character *char_info_block, block1 *d20_macro_block, block2 *d20_macro_block) {
+func generate_macro_full(thing bool, character *char_info_block, block1 *d20_macro_block, block2 *d20_macro_block) {
 	if thing == false {
-
-		var macro string = ""
-
-		macro += "!&{template:atkdmg} "
-		macro += "{{mod=@{" + character.getName() + "|spell_attack_bonus}}}"
-
-		macro += "{{rname=test}} "
-		macro += "{{r1=[[1d20+@{" + character.getName() + "|spell_attack_bonus}]]}} "
-		macro += "{{normal=1}} {{attack=1}} "
-		macro += "{{range=20ft}} "
-		macro += "{{damage=1}} {{dmg1flag=1}} "
-		macro += "{{dmg1=[[1d6]]}}"
-		macro += "{{dmg1type=1d6}} {{spelllevel=0}} "
-		macro += "}"
-
-		fmt.Println(macro)
+		fmt.Printf("?{Which Option?|Option1,\n")
+		fmt.Printf(block1.generate_macro())
+		fmt.Printf("|Option2,\n")
+		fmt.Printf(block2.generate_macro())
+		fmt.Printf("}")
 
 	}
 }

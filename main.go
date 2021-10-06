@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"strconv"
+
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/widgets"
 )
@@ -370,7 +372,7 @@ func (x d20_macro_block) setup() {
 	x.Layout.AddWidget2(x.d20_saving_block.SavingThrowGroup, 4, 0, 0)
 }
 func (x d20_macro_block) getName() string {
-	return "Meow"
+	return x.d20_attack_block.getMoveName()
 }
 
 func (x d20_macro_block) generate_macro() string {
@@ -451,10 +453,14 @@ func main() {
 	var myTabWidget *widgets.QTabWidget
 	myTabWidget = widgets.NewQTabWidget(nil)
 
-	var myFirstTabPage *widgets.QWidget
+	/*var myFirstTabPage *widgets.QWidget
 	myFirstTabPage = widgets.NewQWidget(nil, 0)
 	var mySecondTabPage *widgets.QWidget
-	mySecondTabPage = widgets.NewQWidget(nil, 0)
+	mySecondTabPage = widgets.NewQWidget(nil, 0)*/
+
+	var tabPages []*widgets.QWidget
+	tabPages = append(tabPages, widgets.NewQWidget(nil, 0))
+	tabPages = append(tabPages, widgets.NewQWidget(nil, 0))
 
 	//echoComboBox.ConnectCurrentIndexChanged(func(index int) { echoChanged(echoLineEditCharName, index) })
 
@@ -463,18 +469,24 @@ func main() {
 	var (
 		buttonGroup    = widgets.NewQGroupBox2("", nil)
 		generateButton = widgets.NewQPushButton2("Generate", nil)
+		addButton      = widgets.NewQPushButton2("Add", nil)
+		delButton      = widgets.NewQPushButton2("Del", nil)
 	)
 
 	var ButtonLayout = widgets.NewQGridLayout2()
 	ButtonLayout.AddWidget2(generateButton, 0, 0, 0)
+	ButtonLayout.AddWidget2(addButton, 1, 0, 0)
+	ButtonLayout.AddWidget2(delButton, 2, 0, 0)
 	buttonGroup.SetLayout(ButtonLayout)
 
 	//generateButton.ConnectClicked(func(thing bool) { generate_macro_full(thing, x, blockList[0], blockList[1]) })
 
 	generateButton.ConnectClicked(func(thing bool) { generate_macro_full(thing, x, blockList) })
+	addButton.ConnectClicked(func(thing bool) { add_macro(thing, x, &blockList, myTabWidget, tabPages) })
+	delButton.ConnectClicked(func(thing bool) { del_macro(thing, x, blockList, myTabWidget, tabPages) })
 
-	myFirstTabPage.SetLayout(blockList[0].Layout)
-	mySecondTabPage.SetLayout(blockList[1].Layout)
+	tabPages[0].SetLayout(blockList[0].Layout)
+	tabPages[1].SetLayout(blockList[1].Layout)
 
 	var mainWindowLayout = widgets.NewQGridLayout2()
 	mainWindowLayout.AddWidget2(x.echoGroup, 0, 0, 0)
@@ -484,8 +496,8 @@ func main() {
 	var window = widgets.NewQMainWindow(nil, 0)
 	window.SetWindowTitle("Line Edits")
 
-	myTabWidget.AddTab(myFirstTabPage, "first")
-	myTabWidget.AddTab(mySecondTabPage, "second")
+	myTabWidget.AddTab(tabPages[0], "Option 1")
+	myTabWidget.AddTab(tabPages[1], "Option 2")
 
 	var centralWidget = widgets.NewQWidget(window, 0)
 	centralWidget.SetLayout(mainWindowLayout)
@@ -499,16 +511,46 @@ func main() {
 	widgets.QApplication_Exec()
 }
 
+func add_macro(thing bool, character *char_info_block, blockList *[]*d20_macro_block, tabWidget *widgets.QTabWidget, tabPages []*widgets.QWidget) {
+	if thing == false {
+
+		AAA := create_d20_macro(character)
+
+		AAA.setup()
+
+		*blockList = append(*blockList, AAA)
+
+		tabPages = append(tabPages, widgets.NewQWidget(nil, 0))
+
+		name := "Option " + strconv.Itoa(len(*blockList))
+
+		tabPages[len(tabPages)-1].SetLayout(AAA.Layout)
+
+		tabWidget.AddTab(tabPages[len(tabPages)-1], name)
+	}
+}
+
+func del_macro(thing bool, character *char_info_block, blockList []*d20_macro_block, tabWidget *widgets.QTabWidget, tabPages []*widgets.QWidget) {
+	if thing == false {
+
+		blockList = blockList[:len(blockList)-1]
+
+		tabPages = tabPages[:len(tabPages)-1]
+
+		tabWidget.RemoveTab(tabWidget.Count() - 1)
+	}
+}
+
 func generate_macro_full(thing bool, character *char_info_block, blockList []*d20_macro_block) {
 	if thing == false {
-		/*fmt.Printf("?{Which Option?")
-		fmt.Printf(block1.generate_macro())
+		fmt.Printf("?{Which Option?")
+		/*fmt.Printf(block1.generate_macro())
 		fmt.Printf("|Option2,\n")
 		fmt.Printf(block2.generate_macro())
 		fmt.Printf("}")*/
 
 		for _, j := range blockList {
-			fmt.Printf("|Option1,\n")
+			fmt.Printf("|" + j.getName() + ",\n")
 			fmt.Printf(j.generate_macro())
 		}
 		fmt.Printf("}")

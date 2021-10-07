@@ -104,6 +104,16 @@ func (x attack_block) setup() {
 	x.AttkGroup.SetLayout(x.attkLayout)
 }
 
+func (x attack_block) isActive() bool {
+	switch x.AttkComboBoxTF.CurrentText() {
+	case "True":
+		return true
+	case "False":
+		return false
+	}
+	return false
+}
+
 func (x attack_block) getMoveName() string {
 	return x.echoLineEditSpellName.Text()
 }
@@ -235,7 +245,7 @@ func (x damage_block) getCrit() string {
 }
 
 func (x damage_block) getBonusType() string {
-	return x.Damage1LabelType.Text()
+	return x.Damage1LineEditType.Text()
 }
 
 func (x damage_block) getDamage() string {
@@ -391,25 +401,42 @@ func (x d20_macro_block) generate_macro() string {
 
 	macroText += "&{template:atkdmg" + cb + "{{mod="
 
-	if definedType {
+	if definedType && x.d20_attack_block.isActive() {
 		macroText += "@{" + x.character.getName() + "|" + moveType + "}"
+	} else {
+		macroText += "-"
 	}
 
-	if definedMod {
+	if definedMod && x.d20_attack_block.isActive() {
 		macroText += " + " + modifier
 	}
 
-	macroText += cb + cb + "{{rname=" + moveName + cb + cb + "{{r1=[[1d20"
+	macroText += cb + cb + "{{rname=" + moveName + cb + cb + "{{r1="
 
-	if definedType {
+	if x.d20_attack_block.isActive() {
+		macroText += "[[1d20"
+	} else {
+
+	}
+
+	if definedType && x.d20_attack_block.isActive() {
 		macroText += "+@{" + x.character.getName() + "|" + moveType + "}"
 	}
 
-	if definedMod {
+	if definedMod && x.d20_attack_block.isActive() {
 		macroText += " + " + modifier
 	}
 
-	macroText += "]]" + cb + cb + "{{normal=1" + cb + cb + "{{attack=1" + cb + cb + "{{range=" + atkRange + cb + cb
+	if x.d20_attack_block.isActive() {
+		macroText += "]]"
+	}
+
+	macroText += cb + cb + "{{normal=1" + cb + cb
+
+	if x.d20_attack_block.isActive() {
+		macroText += "{{attack=1" + cb + cb
+	}
+	macroText += "{{range=" + atkRange + cb + cb
 
 	if x.d20_damage_block1.isEnabled() {
 		macroText += "{{damage=1" + cb + cb + "{{dmg1flag=1" + cb + cb + "{{dmg1=[[" + x.d20_damage_block1.getDamage()

@@ -7,10 +7,15 @@ import (
 	"os"
 
 	"strconv"
+	"strings"
 
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/widgets"
 )
+
+func sanitize_input(input string) string {
+	return strings.ReplaceAll(input, ",", "&#44;")
+}
 
 // Char info Block
 type Char_Info interface {
@@ -19,27 +24,34 @@ type Char_Info interface {
 }
 
 type char_info_block struct {
-	echoGroup            *widgets.QGroupBox
-	echoLabel            *widgets.QLabel
-	echoLineEditCharName *widgets.QLineEdit
-	echoLayout           *widgets.QGridLayout
+	echoGroup                     *widgets.QGroupBox
+	echoLabel                     *widgets.QLabel
+	echoLineEditCharName          *widgets.QLineEdit
+	echoLineEditPreselectionMacro *widgets.QLineEdit
+	echoLayout                    *widgets.QGridLayout
 }
 
 func create_char_info() *char_info_block {
-	v := char_info_block{widgets.NewQGroupBox2("", nil), widgets.NewQLabel2("Basics:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQGridLayout2()}
+	v := char_info_block{widgets.NewQGroupBox2("", nil), widgets.NewQLabel2("Basics:", nil, 0), widgets.NewQLineEdit(nil), widgets.NewQLineEdit(nil), widgets.NewQGridLayout2()}
 	return &v
 }
 
 func (x char_info_block) setup() {
 	x.echoLineEditCharName.SetPlaceholderText("Character Name")
+	x.echoLineEditPreselectionMacro.SetPlaceholderText("Message before any move option. Eg. /em pulls out a scroll...")
 
 	x.echoLayout.AddWidget2(x.echoLabel, 0, 0, 0)
 	x.echoLayout.AddWidget3(x.echoLineEditCharName, 1, 0, 1, 1, 0)
+	x.echoLayout.AddWidget3(x.echoLineEditPreselectionMacro, 2, 0, 1, 1, 0)
 	x.echoGroup.SetLayout(x.echoLayout)
 }
 
 func (x char_info_block) getName() string {
 	return x.echoLineEditCharName.Text()
+}
+
+func (x char_info_block) getPreSelectionMessage() string {
+	return x.echoLineEditPreselectionMacro.Text()
 }
 
 //Attack block info
@@ -357,29 +369,32 @@ type d20_macro interface {
 }
 
 type d20_macro_block struct {
-	character         *char_info_block
-	d20_attack_block  *attack_block
-	d20_damage_block1 *damage_block
-	d20_damage_block2 *damage_block
-	d20_saving_block  *saving_throw_block
-	Layout            *widgets.QGridLayout
+	character           *char_info_block
+	d20_premove_message *widgets.QLineEdit
+	d20_attack_block    *attack_block
+	d20_damage_block1   *damage_block
+	d20_damage_block2   *damage_block
+	d20_saving_block    *saving_throw_block
+	Layout              *widgets.QGridLayout
 }
 
 func create_d20_macro(info *char_info_block) *d20_macro_block {
-	v := d20_macro_block{info, create_attack_block(), create_damage_block(), create_damage_block(), create_saving_throw_block(), widgets.NewQGridLayout2()}
+	v := d20_macro_block{info, widgets.NewQLineEdit(nil), create_attack_block(), create_damage_block(), create_damage_block(), create_saving_throw_block(), widgets.NewQGridLayout2()}
 	return &v
 }
 
 func (x d20_macro_block) setup() {
+	x.d20_premove_message.SetPlaceholderText("Message before this move option. Eg. /em pulls out a scroll...")
 	x.d20_attack_block.setup()
 	x.d20_damage_block1.setup()
 	x.d20_damage_block2.setup()
 	x.d20_saving_block.setup()
 
-	x.Layout.AddWidget2(x.d20_attack_block.AttkGroup, 1, 0, 0)
-	x.Layout.AddWidget2(x.d20_damage_block1.Damage1Group, 2, 0, 0)
-	x.Layout.AddWidget2(x.d20_damage_block2.Damage1Group, 3, 0, 0)
-	x.Layout.AddWidget2(x.d20_saving_block.SavingThrowGroup, 4, 0, 0)
+	x.Layout.AddWidget2(x.d20_premove_message, 1, 0, 0)
+	x.Layout.AddWidget2(x.d20_attack_block.AttkGroup, 2, 0, 0)
+	x.Layout.AddWidget2(x.d20_damage_block1.Damage1Group, 3, 0, 0)
+	x.Layout.AddWidget2(x.d20_damage_block2.Damage1Group, 4, 0, 0)
+	x.Layout.AddWidget2(x.d20_saving_block.SavingThrowGroup, 5, 0, 0)
 }
 func (x d20_macro_block) getName() string {
 	return x.d20_attack_block.getMoveName()
@@ -398,6 +413,12 @@ func (x d20_macro_block) generate_macro() string {
 	cb := "&#125;"
 
 	macroText := ""
+
+	macroText += sanitize_input(x.d20_premove_message.Text()) + "\n"
+
+	if !x.d20_attack_block.isActive() && !x.d20_damage_block1.isEnabled() && !x.d20_damage_block2.isEnabled() {
+		return macroText
+	}
 
 	macroText += "&{template:atkdmg" + cb + "{{mod="
 
@@ -570,6 +591,9 @@ func del_macro(thing bool, character *char_info_block, blockList []*d20_macro_bl
 
 func generate_macro_full(thing bool, character *char_info_block, blockList []*d20_macro_block) {
 	if thing == false {
+
+		fmt.Printf(character.getPreSelectionMessage())
+
 		fmt.Printf("?{Which Option?")
 		/*fmt.Printf(block1.generate_macro())
 		fmt.Printf("|Option2,\n")
